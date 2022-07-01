@@ -7,7 +7,7 @@ on:
       - closed
 
 env:
-  PROJECT_NAME: umi-template
+  PROJECT_NAME_TEMP: umi-template
 
 jobs:
   build:
@@ -47,6 +47,7 @@ jobs:
           COS_REGION: ${{ secrets.COS_REGION }}
           COS_BUCKET: ${{ secrets.COS_BUCKET }}
           PROJECT_DOMAIN: ${{ secrets.PROJECT_DOMAIN }}
+          PROJECT_NAME: ${{ env.PROJECT_NAME_TEMP }}
 
       - name: Remove oss
         run: |
