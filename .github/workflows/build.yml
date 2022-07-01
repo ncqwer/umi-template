@@ -52,6 +52,7 @@ jobs:
       - name: Make .env file
         run: |
           yarn env:fill
+          cat .env
         env:
           COS_SECRETID: ${{ secrets.COS_SECRETID }}
           COS_SECRETKEY: ${{ secrets.COS_SECRETKEY }}
