@@ -1,0 +1,65 @@
+name: Stop Preview
+
+on:
+  pull_request:
+    types:
+      # 当 feature 分支关闭时，
+      - closed
+
+env:
+  PROJECT_NAME: umi-template
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout/@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get feature branch name
+        run: |
+          echo "COMMIT_REF_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+
+      - name: Install Yarn@v1
+        if: ${{ env.ACT }}
+        run: |
+          npm install --global yarn
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version: 14
+
+      - name: Install Dep
+        run: |
+          yarn add dotenv-cli && yarn add cos-nodejs-sdk-v5
+
+      - name: Make .env file
+        run: |
+          yarn env:fill
+        env:
+          COS_SECRETID: ${{ secrets.COS_SECRETID }}
+          COS_SECRETKEY: ${{ secrets.COS_SECRETKEY }}
+          COS_REGION: ${{ secrets.COS_REGION }}
+          COS_BUCKET: ${{ secrets.COS_BUCKET }}
+          PROJECT_DOMAIN: ${{ secrets.PROJECT_DOMAIN }}
+
+      - name: Remove oss
+        run: |
+          yarn oss:remove
+
+      - name: Remote ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd project/${{ env.PROJECT_NAME }}/${{ env.COMMIT_REF_NAME }}
+            sudo docker-compose down
+            cd ..
+            mv ${{ env.COMMIT_REF_NAME }} ${{ env.COMMIT_REF_NAME }}.unused

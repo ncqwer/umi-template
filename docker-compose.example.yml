@@ -1,0 +1,14 @@
+version: "3"
+services:
+  domain:
+    image: $$DOCKERHUB_USERNAME$$/$$PROJECT_NAME$$:$$COMMIT_REF_NAME$$
+    labels:
+      - "traefik.http.routers.$$PROJECT_NAME$$-$$COMMIT_REF_NAME$$.rule=Host(`$$COMMIT_REF_NAME$$.$$PROJECT_NAME$$.$$PROJECT_DOMAIN$$`)"
+      # # 设置 https，此时我们的 certresolver 为 le，与上篇文章配置保持一致
+      # - traefik.http.routers.cra.tls=true
+      # - traefik.http.routers.cra.tls.certresolver=le
+
+networks:
+  default:
+    external:
+      name: traefik_default

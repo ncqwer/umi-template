@@ -1,0 +1,98 @@
+# 为了试验，此处作为单独的 Workflow，在实际工作中可 Install -> Lint、Test -> Preview 串行检验
+name: Build
+
+# 执行 CI 的时机: 当 git push 到 feature-* 分支时
+on:
+  push:
+    branches:
+      - feature-*
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+
+env:
+  PROJECT_NAME: umi-template
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout/@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get current branch
+        run: |
+          echo "COMMIT_REF_NAME=$(git branch --show-current)" >> $GITHUB_ENV
+
+      - name: Install Yarn@v1
+        if: ${{ env.ACT }}
+        run: |
+          npm install --global yarn
+
+      - name: Setup Nodejs
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+          node-version: 14
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Install Dep
+        run: |
+          yarn
+
+      - name: Make .env file
+        run: |
+          yarn env:fill
+        env:
+          COS_SECRETID: ${{ secrets.COS_SECRETID }}
+          COS_SECRETKEY: ${{ secrets.COS_SECRETKEY }}
+          COS_REGION: ${{ secrets.COS_REGION }}
+          COS_BUCKET: ${{ secrets.COS_BUCKET }}
+          PROJECT_DOMAIN: ${{ secrets.PROJECT_DOMAIN }}
+
+      - name: Build dist
+        run: |
+          yarn build
+          cat dist/index.html
+
+      - name: Upload Cos
+        run: |
+          yarn oss:deploy
+
+      - name: Build and upload docker
+        run: |
+          yarn docker:deploy
+
+      - name: Output docker compose config
+        id: docker-output
+        run: |
+          yarn docker-compose:fill
+
+      - name: Copy docker-compose via ssh key
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: 'docker-compose.yml'
+          target: 'project/${{ env.PROJECT_NAME }}/${{ env.COMMIT_REF_NAME }}'
+
+      - name: Remote ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd project/${{ env.PROJECT_NAME }}/${{ env.COMMIT_REF_NAME }}
+            sudo docker-compose down
+            sudo docker-compose pull && sudo docker-compose up -d --remove-orphans

@@ -1,0 +1,65 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "umi dev",
+    "build": "dotenv -e .env -- umi build",
+    "postinstall": "umi generate tmp",
+    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
+    "test": "umi-test",
+    "test:coverage": "umi-test --coverage",
+    "env:fill": "node scripts/fillEnv",
+    "local:env:fill": "dotenv -e .env.local -v COMMIT_REF_NAME=`git branch --show-current` -- yarn env:fill",
+    "oss:deploy": "dotenv -e .env -- node scripts/uploadCos",
+    "oss:remove": "dotenv -e .env -- node scripts/removeCos",
+    "docker:deploy": "dotenv -e .env -- node scripts/dockerBuild",
+    "docker-compose:fill": "dotenv -e .env -- node scripts/exportDockerCompose",
+    "local:bootstrap": "yarn local:env:fill && yarn docker-compose:fill"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  },
+  "dependencies": {
+    "@ant-design/pro-layout": "^6.5.0",
+    "@emotion/css": "^11.9.0",
+    "antd": "^4.21.4",
+    "react": "17.x",
+    "react-dom": "17.x",
+    "umi": "^3.5.26"
+  },
+  "devDependencies": {
+    "@actions/core": "^1.9.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
+    "@umijs/preset-react": "1.x",
+    "@umijs/test": "^3.5.26",
+    "autoprefixer": "^9",
+    "cos-nodejs-sdk-v5": "^2.11.12",
+    "dotenv-cli": "^5.1.0",
+    "eslint": "^8.18.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.0",
+    "eslint-plugin-prettier": "^4.1.0",
+    "eslint-plugin-react": "^7.30.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "lint-staged": "^10.0.7",
+    "p-all": "^3.0.0",
+    "postcss": "^7",
+    "postcss-import": "^12",
+    "prettier": "^2.2.0",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+    "typescript": "^4.1.2",
+    "yorkie": "^2.0.0"
+  }
+}
