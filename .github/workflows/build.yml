@@ -60,6 +60,8 @@ jobs:
           COS_BUCKET: ${{ secrets.COS_BUCKET }}
           PROJECT_DOMAIN: ${{ secrets.PROJECT_DOMAIN }}
           PROJECT_NAME: ${{ env.PROJECT_NAME_TEMP }}
+          DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+          DOCKERHUB_PASSWORD: ${{secrets.DOCKERHUB_PASSWORD}}
 
       - name: Build dist
         run: |
