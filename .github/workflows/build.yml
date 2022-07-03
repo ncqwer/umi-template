@@ -10,6 +10,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'README.md'
+      - 'Jenkinsfile'
 
 env:
   PROJECT_NAME_TEMP: umi-template
