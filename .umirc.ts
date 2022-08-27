@@ -19,10 +19,10 @@ export default defineConfig({
     style: 'css',
   },
   npmClient: 'yarn',
-  // publicPath:
-  //   process.env.NODE_ENV === 'production'
-  //     ? process.env.PUBLIC_PATH || '/'
-  //     : '/',
+  publicPath:
+    process.env.NODE_ENV === 'production'
+      ? process.env.PUBLIC_PATH || '/'
+      : '/',
 });
 
 // export default {
