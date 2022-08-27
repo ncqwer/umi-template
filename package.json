@@ -3,8 +3,9 @@
   "scripts": {
     "dev": "max dev",
     "start": "max dev",
-    "build": "dotenv -e .env -- max build",
-    "postinstall": "yarn local:bootstrap && max setup",
+    "build": "max build",
+    "ci:build": "dotenv -e .env -- max build",
+    "postinstall": "max setup",
     "env:fill": "node scripts/fillEnv",
     "local:env:fill": "dotenv -e .env.local -v COMMIT_REF_NAME=`git branch --show-current` -- yarn env:fill",
     "oss:deploy": "dotenv -e .env -- node scripts/uploadCos",
