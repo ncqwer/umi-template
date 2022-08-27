@@ -1,20 +1,32 @@
-import { defineConfig } from 'umi';
+import { defineConfig } from '@umijs/max';
 
 export default defineConfig({
-  nodeModulesTransform: {
-    type: 'none',
+  tailwindcss: {},
+  // extraPostCSSPlugins: [
+  //   require('postcss-import'),
+  //   // eslint-disable-next-line
+  //   require('tailwindcss'),
+  // ],
+  antd: {
+    // configProvider
+    configProvider: {},
+    // themes
+    dark: false,
+    compact: true,
+    // babel-plugin-import
+    import: true,
+    // less or css, default less
+    style: 'css',
   },
-  dynamicImport: {},
-  history: { type: 'browser' },
-  fastRefresh: {},
-  //other umi configs
-  extraPostCSSPlugins: [
-    require('postcss-import'),
-    // eslint-disable-next-line
-    require('tailwindcss'),
-  ],
-  publicPath:
-    process.env.NODE_ENV === 'production'
-      ? process.env.PUBLIC_PATH || '/'
-      : '/',
+  npmClient: 'yarn',
+  // publicPath:
+  //   process.env.NODE_ENV === 'production'
+  //     ? process.env.PUBLIC_PATH || '/'
+  //     : '/',
 });
+
+// export default {
+//   npmClient: 'yarn',
+//   tailwindcss: {},
+//   antd: {},
+// };
